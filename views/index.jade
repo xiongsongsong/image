@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(action="/save",method="post",enctype="multipart/form-data")
+    input(type="file",name="file")
+    input(type="submit",value="submit")
+  ul
+      - docs.forEach(function(item){
+        li
+            a(href="/read/#{item._id}")=item._id
+      - })
