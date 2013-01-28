@@ -13,7 +13,6 @@ var im = require('imagemagick');
 var GridStore = DB.mongodb.GridStore;
 var ObjectID = DB.mongodb.ObjectID;
 
-
 exports.savePsd = function (req, res) {
 
     res.header('Content-Type', 'text/html;charset=utf-8')
@@ -34,9 +33,6 @@ exports.savePsd = function (req, res) {
     //存为数组以方便递归处理
     _savePsd(files, req, res);
 };
-
-//按比例缩放，只针对宽度
-var resizeParam = [24, 30, 40, 60, 70, 80, 100, 110, 120, 160, 170, 200, 210, 250, 310, 620, 670];
 
 var allowFile = {
     'jpg': 'image/jpg',
@@ -64,109 +60,88 @@ function _savePsd(files, req, res) {
 
         tempFile.push(cur.path);
 
-        var extName = path.extname(cur.name).substring(1).toLowerCase();
+        var options = {
+            chunk_size: 102400,
+            metadata: {
+                originName: cur.name
+            }
+        };
 
-        if (!allowFile[extName]) {
-            return;
-        }
-
-        var fileId = new ObjectID().toString();
+        var fileId = new ObjectID();
 
         //检查是否为有效图片
-        im.identify(['-format', '%wx%h', cur.path + (extName === 'psd' ? '[0]' : '')], function (err, output) {
+        im.identify(['-format', '%wx%hx%m', cur.path + '[0]'], function (err, output) {
             if (!err) {
 
                 output = output.trim().split('x');
 
                 cur.width = parseInt(output[0], 10);
                 cur.height = parseInt(output[1], 10);
+                cur.format = output[2].toLowerCase();
 
-                var gs;
+                console.log(cur.format);
+                return;
+                options.metadata.width = cur.width;
+                options.metadata.height = cur.height;
 
-                if (extName === 'psd') {
-                    console.log('即将处理PSD');
-                    //首先保存PSD，注意后缀
-                    gs = new GridStore(DB.dbServer, cur.name, "w", {
-                        chunk_size: 10240
-                    });
-                    gs.writeFile(cur.path, function (err) {
-                        if (!err) {
-
-                            console.log('保存PSD成功');
-                            console.log('正在转换PSD文件为jpg');
-
-                            var jpgPath = path.join(path.dirname(cur.path), fileId + '.jpg');
-
-                            im.convert([cur.path + '[0]', jpgPath], function (err) {
-                                if (!err) {
-
-                                    console.log('成功转换psd-->jpg');
-
-                                    tempFile.push(jpgPath);
-
-                                    //将PSD转换为JPG
-                                    gs = new GridStore(DB.dbServer, fileId, "w", {
-                                        chunk_size: 10240
-                                    });
-                                    console.log('开始保存psd生成的jpg');
-
-                                    gs.writeFile(jpgPath, function (err) {
-                                        if (!err) {
-                                            console.log('保存psd生成的jpg成功！');
-                                            //用新生成的jpg来生成缩略图
-                                            cur.path = jpgPath;
-                                            save();
-                                        } else {
-                                            console.log('无法保存jpg' + fileId + Date.now());
-                                        }
-                                    });
-                                } else {
-                                    console.log('转换PSD到jpg失败', err);
-                                }
-                            });
-                        } else {
-                            console.log('PSD保存失败');
-                        }
-                    });
-                } else {
-                    gs = new GridStore(DB.dbServer, fileId, "w", {
-                        chunk_size: 10240
-                    });
-
-                    gs.writeFile(cur.path, function (err) {
-                        if (!err) {
-                            //先生成上传记录，再保存到gridFS
-                            save();
-                        } else {
-                            console.log(cur.name + '处理失败' + err);
-                            save();
-                        }
-                    });
-                }
-
+                //保存原始文件
+                var gs = new GridStore(DB.dbServer, fileId, fileId.toString() + '_origin', "w", options);
+                gs.writeFile(cur.path, function (err) {
+                    if (!err) {
+                        convertAndSaveJPG(cur, options);
+                    } else {
+                        console.log('PSD保存失败');
+                        save();
+                    }
+                });
             } else {
                 console.log(err);
+                save();
             }
         });
+    }
 
+    function convertAndSaveJPG(cur, options) {
+        var fileId = new ObjectID();
+        var jpgPath = path.join(path.dirname(cur.path), fileId + '.jpg');
+        options.content_type = 'image/jpeg';
+        im.convert([cur.path + '[0]', '-quality', '0.8', jpgPath], function (err) {
+            if (!err) {
+                tempFile.push(jpgPath);
+                var gs = new GridStore(DB.dbServer, fileId, fileId.toString(), "w", options);
+                gs.writeFile(jpgPath, function (err) {
+                    if (!err) {
+                        cur.path = jpgPath;
+                    } else {
+                        console.log('无法保存jpg' + fileId + Date.now());
+                    }
+                    save();
+                });
+            } else {
+                console.log(cur.name + '转换到jpg失败', err);
+                save();
+            }
+        });
     }
 
     save();
+
 }
+
 
 /*
  该方法并不能完全解决问题
  此处应该使用定时程序，来做处理
  */
 function unlink(list) {
-    var cur = list.shift();
-    fs.unlink(cur, function (err) {
-        if (!err) {
-            console.log(cur + '\t already unlink');
-        } else {
-            console.log('unlink fail', err);
-        }
-        if (list.length > 0) unlink(list);
-    })
+    /*var cur = list.shift();
+     fs.unlink(cur, function (err) {
+     if (!err) {
+     console.log(cur + '\t already unlink');
+     } else {
+     console.log('unlink fail', err);
+     }
+     if (list.length > 0) unlink(list);
+     })*/
 }
 

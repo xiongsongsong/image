@@ -1,5 +1,6 @@
 var DB = require('db');
 var crypto = require('crypto');
+var im = require('imagemagick');
 
 var filterParamRe = /\w:\w+/
 var isNumber = /^[1-9][0-9]*$/;
@@ -53,12 +54,8 @@ exports.read = function (req, res) {
     var md5 = crypto.createHash('md5');
     md5.update(JSON.stringify(sortParam));
     md5 = md5.digest('hex');
-    console.log(md5)
 
-
-
-
-
+    //查库
 
     var id = DB.mongodb.ObjectID(req.params[0]);
     var gs = new DB.mongodb.GridStore(DB.dbServer, id, "r");
