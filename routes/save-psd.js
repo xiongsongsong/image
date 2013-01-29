@@ -62,9 +62,7 @@ function _savePsd(files, req, res) {
 
         var options = {
             chunk_size: 102400,
-            metadata: {
-                originName: cur.name
-            }
+            metadata: { }
         };
 
         var fileId = new ObjectID();
@@ -77,12 +75,22 @@ function _savePsd(files, req, res) {
 
                 cur.width = parseInt(output[0], 10);
                 cur.height = parseInt(output[1], 10);
+                //文件的真实格式
                 cur.format = output[2].toLowerCase();
 
-                console.log(cur.format);
-                return;
+                //如果不是允许的类型
+                if (!allowFile[cur.format]) {
+                    save();
+                    return;
+                }
+
+                options.metadata.originName = cur.name.substring(0, cur.name.lastIndexOf('.') + 1) + cur.format;
+                options.content_type = allowFile[cur.format];
+
                 options.metadata.width = cur.width;
                 options.metadata.height = cur.height;
+
+                return;
 
                 //保存原始文件
                 var gs = new GridStore(DB.dbServer, fileId, fileId.toString() + '_origin', "w", options);
