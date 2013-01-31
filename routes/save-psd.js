@@ -90,8 +90,6 @@ function _savePsd(files, req, res) {
                 options.metadata.width = cur.width;
                 options.metadata.height = cur.height;
 
-                return;
-
                 //保存原始文件
                 var gs = new GridStore(DB.dbServer, fileId, fileId.toString() + '_origin', "w", options);
                 gs.writeFile(cur.path, function (err) {
@@ -113,23 +111,28 @@ function _savePsd(files, req, res) {
         var fileId = new ObjectID();
         var jpgPath = path.join(path.dirname(cur.path), fileId + '.jpg');
         options.content_type = 'image/jpeg';
-        im.convert([cur.path + '[0]', '-quality', '0.8', jpgPath], function (err) {
-            if (!err) {
-                tempFile.push(jpgPath);
-                var gs = new GridStore(DB.dbServer, fileId, fileId.toString(), "w", options);
-                gs.writeFile(jpgPath, function (err) {
-                    if (!err) {
-                        cur.path = jpgPath;
-                    } else {
-                        console.log('无法保存jpg' + fileId + Date.now());
-                    }
+        try {
+            im.convert([cur.path + '[0]', '-quality', '0.8', jpgPath], function (err) {
+                if (!err) {
+                    tempFile.push(jpgPath);
+                    var gs = new GridStore(DB.dbServer, fileId, fileId.toString(), "w", options);
+                    gs.writeFile(jpgPath, function (err) {
+                        if (!err) {
+                            cur.path = jpgPath;
+                        } else {
+                            console.log('无法保存jpg' + fileId + Date.now());
+                        }
+                        save();
+                    });
+                } else {
+                    console.log(cur.name + '转换到jpg失败', err);
                     save();
-                });
-            } else {
-                console.log(cur.name + '转换到jpg失败', err);
-                save();
-            }
-        });
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            save();
+        }
     }
 
     save();
