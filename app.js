@@ -32,7 +32,7 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 
 //读取指定的文件
-app.get(/\/read\/(\w+)\/(.*)/, require('./routes/read').read);
+app.get(/\/read\/(\w+)(?:\/)?(.*)?/, require('./routes/read').read);
 
 app.post('/save', require('./routes/save-psd').savePsd);
 
