@@ -65,7 +65,7 @@ function _savePsd(files, req, res) {
             metadata: { }
         };
 
-        var fileId = new ObjectID();
+        var fileId = new ObjectID().toString();
 
         //检查是否为有效图片
         im.identify(['-format', '%wx%hx%m', cur.path + '[0]'], function (err, output) {
@@ -91,10 +91,10 @@ function _savePsd(files, req, res) {
                 options.metadata.height = cur.height;
 
                 //保存原始文件
-                var gs = new GridStore(DB.dbServer, fileId, fileId.toString() + '_origin', "w", options);
+                var gs = new GridStore(DB.dbServer, fileId + '_origin', fileId + '_origin', "w", options);
                 gs.writeFile(cur.path, function (err) {
                     if (!err) {
-                        convertAndSaveJPG(cur, options);
+                        convertAndSaveJPG(cur, options, fileId);
                     } else {
                         console.log('PSD保存失败');
                         save();
@@ -107,15 +107,14 @@ function _savePsd(files, req, res) {
         });
     }
 
-    function convertAndSaveJPG(cur, options) {
-        var fileId = new ObjectID();
+    function convertAndSaveJPG(cur, options, fileId) {
         var jpgPath = path.join(path.dirname(cur.path), fileId + '.jpg');
         options.content_type = 'image/jpeg';
         try {
             im.convert([cur.path + '[0]', '-quality', '0.8', jpgPath], function (err) {
                 if (!err) {
                     tempFile.push(jpgPath);
-                    var gs = new GridStore(DB.dbServer, fileId, fileId.toString(), "w", options);
+                    var gs = new GridStore(DB.dbServer, fileId, fileId, "w", options);
                     gs.writeFile(jpgPath, function (err) {
                         if (!err) {
                             cur.path = jpgPath;
