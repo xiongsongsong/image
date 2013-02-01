@@ -84,7 +84,7 @@ function _savePsd(files, req, res) {
                     return;
                 }
 
-                options.metadata.originName = cur.name.substring(0, cur.name.lastIndexOf('.') + 1) + cur.format;
+                options.metadata.origin_name = cur.name.substring(0, cur.name.lastIndexOf('.') + 1) + cur.format;
                 options.content_type = allowFile[cur.format];
 
                 options.metadata.width = cur.width;
