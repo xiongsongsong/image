@@ -3,6 +3,7 @@ var crypto = require('crypto');
 var im = require('imagemagick');
 var fs = require('fs');
 var path = require('path');
+var GridStore = DB.mongodb.GridStore;
 
 //不使用\w，因为其包含 _ 等符号
 var idRE = /^(?:(?:[a-z0-9]{24})(?:_origin)?|[a-z0-9]{32})$/;
@@ -114,8 +115,8 @@ exports.read = function (req, res) {
                             }
                         }
                     }
-                });
 
+                });
             }
         } else {
             res.end('Not Found');
@@ -148,11 +149,42 @@ exports.read = function (req, res) {
         }
 
         console.log(resizeParam);
+        var options = {
+            chunk_size: 102400,
+            metadata: {
+
+            }
+        };
 
         fs.writeFile(fileName, data, function (err) {
 
             im.resize(resizeParam, function (err, stdout, stderr) {
-                if (err) throw err;
+                if (err) {
+                    res.end('error');
+                } else {
+                    var point = readProcess.indexOf(md5);
+                    if (point > -1) readProcess.splice(point, 1);
+
+                    var gs = new GridStore(DB.dbServer, md5, md5, "w", options);
+                    gs.writeFile(resizeParam.dstPath, function (err) {
+                        res.sendfile(resizeParam.dstPath, function () {
+                            fs.unlink(resizeParam.dstPath, function (err) {
+                                if (err) {
+                                    console.log('无法删除生成的缩略图')
+                                } else {
+                                    console.log('已经删除生成的缩略图');
+                                }
+                                fs.unlink(resizeParam.srcPath, function (err) {
+                                    if (err) {
+                                        console.log('无法删除原图')
+                                    } else {
+                                        console.log('已经删除原图');
+                                    }
+                                })
+                            });
+                        });
+                    });
+                }
             });
         })
     }
