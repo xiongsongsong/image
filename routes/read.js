@@ -141,18 +141,10 @@ exports.read = function (req, res) {
             resizeParam.quality = (sortParam.q === 100 ? 1 : '0.' + sortParam.q)
         }
 
-        if (!resizeParam.width) {
-            resizeParam.width = '100%';
-        }
-        if (!resizeParam.height) {
-            resizeParam.height = '100%';
-        }
-
-        console.log(resizeParam);
         var options = {
             chunk_size: 102400,
             metadata: {
-
+                origin: req.params[0]
             }
         };
 
@@ -174,7 +166,7 @@ exports.read = function (req, res) {
                                 } else {
                                     console.log('已经删除生成的缩略图');
                                 }
-                                fs.unlink(resizeParam.srcPath, function (err) {
+                                fs.unlink(fileName, function (err) {
                                     if (err) {
                                         console.log('无法删除原图')
                                     } else {
