@@ -137,7 +137,7 @@ exports.read = function (req, res) {
         if (sortParam.h)  param.height = sortParam.h;
         param.dstPath = fileName + (sortParam.f ? '.' + sortParam.f : '.jpg');
         if (sortParam.q) {
-            param.quality = (sortParam.q === 100 ? 1 : '0.' + sortParam.q)
+            param.quality = (sortParam.q === 100 ? '1' : '0.' + (sortParam.q < 10 ? '0' + sortParam.q : sortParam.q))
         }
 
         if (!param.width && !param.height) param.width = param.height = '100%'
