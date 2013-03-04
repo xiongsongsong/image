@@ -5,8 +5,7 @@ var fs = require('fs');
 var path = require('path');
 var GridStore = DB.mongodb.GridStore;
 
-//不使用\w，因为其包含 _ 等符号
-var idRE = /^(?:(?:[a-z0-9]{24})(?:_origin)?|[a-z0-9]{32})$/;
+var idRE = /^(?:(?:[a-z0-9]{24})(?:_origin)?)$/;
 var isOriginRE = /^(?:[a-z0-9]{24})(?:_origin)?$/;
 
 
@@ -42,11 +41,10 @@ var validator = {
 exports.read = function (req, res) {
 
     if (!idRE.test(req.params[0])) {
-        res.end('Fail Params');
+        res.end();
         return;
     }
 
-    var isOrigin = isOriginRE.test(req.params[0]);
     var p = {};
     var sortParam = Object.create(null);
     if (req.params[1]) {
@@ -125,21 +123,24 @@ exports.read = function (req, res) {
     function convertOrigin(data) {
         if (!data) {
             console.log('Not Found md5 file');
+            res.end();
             return;
         }
         var tempFileName = md5 + Date.now() + parseInt(Math.random() * 100000, 10);
         var fileName = path.join(__dirname, '..', 'temp', tempFileName);
 
         //开始拼装参数
-        var resizeParam = {};
+        var param = {};
 
-        resizeParam.srcPath = fileName + '[0]';
-        if (sortParam.w)  resizeParam.width = sortParam.w;
-        if (sortParam.h)  resizeParam.height = sortParam.h;
-        resizeParam.dstPath = fileName + (sortParam.f ? '.' + sortParam.f : '.jpg');
+        param.srcPath = fileName + '[0]';
+        if (sortParam.w)  param.width = sortParam.w;
+        if (sortParam.h)  param.height = sortParam.h;
+        param.dstPath = fileName + (sortParam.f ? '.' + sortParam.f : '.jpg');
         if (sortParam.q) {
-            resizeParam.quality = (sortParam.q === 100 ? 1 : '0.' + sortParam.q)
+            param.quality = (sortParam.q === 100 ? 1 : '0.' + sortParam.q)
         }
+
+        if (!param.width && !param.height) param.width = param.height = '100%'
 
         var options = {
             chunk_size: 102400,
@@ -150,7 +151,7 @@ exports.read = function (req, res) {
 
         fs.writeFile(fileName, data, function (err) {
 
-            im.resize(resizeParam, function (err, stdout, stderr) {
+            im.resize(param, function (err, stdout, stderr) {
                 if (err) {
                     res.end('error');
                 } else {
@@ -158,9 +159,9 @@ exports.read = function (req, res) {
                     if (point > -1) readProcess.splice(point, 1);
 
                     var gs = new GridStore(DB.dbServer, md5, md5, "w", options);
-                    gs.writeFile(resizeParam.dstPath, function (err) {
-                        res.sendfile(resizeParam.dstPath, function () {
-                            fs.unlink(resizeParam.dstPath, function (err) {
+                    gs.writeFile(param.dstPath, function (err) {
+                        res.sendfile(param.dstPath, function () {
+                            fs.unlink(param.dstPath, function (err) {
                                 if (err) {
                                     console.log('无法删除生成的缩略图')
                                 } else {
