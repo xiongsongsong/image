@@ -1,4 +1,12 @@
+define(function (require, exports, module) {
 
-define(function(require, exports, module) {
-    require('./position/init');
+    /*加载图片*/
+    require('./read');
+
+    /*图片拖动*/
+    require('./drag')
+
+    /*控制*/
+    require('./control')
+
 });

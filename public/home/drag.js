@@ -25,7 +25,6 @@ define(function (require, exports, module) {
     })
 
     function move() {
-        document.title = Math.random()
         $(document).on('mousemove', dragStart)
     }
 

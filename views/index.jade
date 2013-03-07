@@ -13,8 +13,11 @@ block content
         .sign Sign
     #container
         #pic
-            img#img(src="/images/2.jpg")
+            #img
+                img
     #control
+        a.zoom(href="#",data-zoom="actual-pixels") 1:1
+        a.zoom(href="#",data-zoom="fit-screen") 100%
     #list
     #sidebar
     script(src="/sea-debug.js",data-config="/config",data-main="/home/init",id="seajsnode")
