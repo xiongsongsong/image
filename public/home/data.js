@@ -12,6 +12,11 @@ define(function (rquire, exports, module) {
             src: '/images/2.jpg',
             width: 1680,
             height: 3800
+        },
+        {
+            src: '/images/3.jpg',
+            width: 2000,
+            height: 200
         }
     ]
     exports.data = data;

@@ -10,50 +10,73 @@ define(function (require, exports, module) {
 
     var $pic = $('#pic');
     var $img = $('#img')
+    var img = $img.find('img')[0];
     var current = require('./read').current;
 
     exports.zoom = function (param) {
-        var img = $img.find('img')[0];
         switch (param) {
             case 'actual-pixels':
-                actualPixels($img.find('img')[0])
+                exports.model = param;
+                actualPixels();
                 break;
             case 'fit-screen':
+                if (exports.model === 'fit-screen') return;
+                exports.model = param;
+                fitScreen();
                 break;
         }
     }
 
-    /*适应屏幕*/
-    function actualPixels(ImgD) {
+    /*适应屏幕大小*/
+    function actualPixels() {
         var image = {
             width: current.width,
             height: current.height
         };
         //图片按比例缩放
-        var iwidth = $pic.width();
-        var iheight = $pic.height();
-        if (image.width / image.height >= iwidth / iheight) {
-            if (image.width > iwidth) {
-                ImgD.width = iwidth;
-                ImgD.height = (image.height * iwidth) / image.width;
+        var currentW = $pic.width();
+        var currentH = $pic.height();
+        var w, h;
+        if (image.width / image.height >= currentW / currentH) {
+            if (image.width > currentW) {
+                w = currentW;
+                h = (image.height * currentW) / image.width;
             } else {
-                ImgD.width = image.width;
-                ImgD.height = image.height;
+                w = image.width;
+                h = image.height;
             }
-
-            ImgD.alt = image.width + "×" + image.height;
         }
         else {
-            if (image.height > iheight) {
-                ImgD.height = iheight;
-                ImgD.width = (image.width * iheight) / image.height;
+            if (image.height > currentH) {
+                h = currentH;
+                w = (image.width * currentH) / image.height;
             } else {
-                ImgD.width = image.width;
-                ImgD.height = image.height;
+                w = image.width;
+                h = image.height;
             }
-            ImgD.alt = image.width + "×" + image.height;
         }
+        img.width = w;
+        img.height = h;
+        $img.css({
+            top: ($pic.height() / 2 - h / 2),
+            left: ($pic.width() / 2 - w / 2)
+        })
     }
 
+    /*实际大小*/
+    function fitScreen() {
+        img.width = current.width;
+        img.height = current.height;
+        $img.css({
+            top: -(current.height / 2 - $pic.height() / 2),
+            left: -(current.width - $pic.width()) / 2
+        })
+    }
+
+    $(window).on('resize', function () {
+        if (exports.model === 'actual-pixels') {
+            actualPixels();
+        }
+    })
 
 })

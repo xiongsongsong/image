@@ -44,18 +44,29 @@ a
     position: fixed
     left: 0
     top: 50%
-    height: 200px
     background: #000
     margin-top: -100px
     color:#fff
+    font-size:12px
 
 #control a
     display:block
     width:100%
-    height:50px
-    background:#222
     text-align:center
-    line-height:50px
+    line-height:20px
+    padding:8px 0
+    text-decoration:none
+    -webkit-transition: all .2s ease
+    -moz-transition: all .2s ease
+    -o-transition: all .2s ease
+    transition: all .2s ease
+    text-shadow:1px 1px 1px #000
+    letter-spacing:3px
+    color:#555
+
+#control a.checked
+    background:#555
+    color:#eee
 
 /*底部的导航栏*/
 #list 
@@ -66,6 +77,31 @@ a
     height: 50px
     background: #000
 
+/*主体图片*/
+#file-container
+    text-align: center
+
+#file-container .file
+    display: inline-block
+    border:solid 1px #000
+
+#file-container .file a
+    border: 1px solid #000
+    margin-left: -1px
+    display: inline-block
+    border-top: none
+    position: relative
+
+#file-container .file a img:after
+    position:absolute
+    left:0
+    top:0
+    width:100%
+    height:100%
+    content:'.';
+    background:url(/home/bg.png) 0 0;
+
+
 #container
     text-align: center
     position:absolute
@@ -73,18 +109,31 @@ a
     top:50px
     bottom:50px
     width:100%
-
-#pic
-    height: 100%
-    width: 100%
-    position: absolute
     overflow:hidden
 
+#pic
+    position: absolute
+    top:30px
+    bottom:30px
+    width:100%
 #img
     position:absolute;
     left:3px
     top:0
     box-shadow:0 0 52px #000,0 0 1px #000
+
+#img.anim
+    -webkit-transition: all .2s ease
+    -moz-transition: all .2s ease
+    -o-transition: all .2s ease
+    transition: all .2s ease
+
+#img img
+    -webkit-transition: all .2s ease
+    -moz-transition: all .2s ease
+    -o-transition: all .2s ease
+    transition: all .2s ease
+    display:block
 
 #container .pic img
     box-shadow: 0 0 1px rgba(0, 0, 0, 1), 0 0 32px rgba(0, 0, 0, .5)

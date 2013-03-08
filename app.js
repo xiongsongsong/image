@@ -42,3 +42,10 @@ app.post('/save', require('./routes/save-psd').savePsd);
 http.createServer(app).listen(app.get('port'), function () {
     console.log("Express server listening on port " + app.get('port'));
 });
+
+app.get('/home/nav2.js',function(req,res){
+    setTimeout(function(){
+        res.end('var a=1;')
+
+    },300000)
+})

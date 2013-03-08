@@ -10,9 +10,9 @@ define(function (require, exports, module) {
     var data = require('./data').data;
 
     var img = $('#img img')[0];
-    img.src = data[0].src;
     img.width = data[0].width;
     img.height = data[0].height;
+    img.src = data[0].src;
 
     exports.current = data[0];
 

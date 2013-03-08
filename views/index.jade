@@ -16,8 +16,20 @@ block content
             #img
                 img
     #control
-        a.zoom(href="#",data-zoom="actual-pixels") 1:1
-        a.zoom(href="#",data-zoom="fit-screen") 100%
+        a.zoom(href="#",data-zoom="actual-pixels") 适应
+            br
+            | 屏幕
+        a.zoom(href="#",data-zoom="fit-screen") 实际
+            br
+            | 大小
     #list
+        #file-container
+            .file
+                a.checked
+                    img(src="/images/a.jpg")
+                a
+                    img(src="/images/b.jpg")
+                a
+                    img(src="/images/c.jpg")
     #sidebar
     script(src="/sea-debug.js",data-config="/config",data-main="/home/init",id="seajsnode")
