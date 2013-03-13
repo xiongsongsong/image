@@ -6,8 +6,6 @@ var path = require('path');
 var GridStore = DB.mongodb.GridStore;
 
 var idRE = /^(?:(?:[a-z0-9]{24})(?:_origin)?)$/;
-var isOriginRE = /^(?:[a-z0-9]{24})(?:_origin)?$/;
-
 
 var filterParamRe = /\w:\w+/
 var isNumber = /^[1-9][0-9]*$/;
