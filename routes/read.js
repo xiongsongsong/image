@@ -76,6 +76,8 @@ exports.read = function (req, res) {
 
     var grid = new DB.mongodb.Grid(DB.client, 'fs');
 
+    console.log(id);
+
     grid.get(id, function (err, data) {
         if (!err) {
             //如果是普通请求（未加参数）
@@ -158,21 +160,25 @@ exports.read = function (req, res) {
                     var gs = new GridStore(DB.dbServer, md5, md5, "w", options);
                     gs.writeFile(param.dstPath, function (err) {
                         updateLastAccessTime(md5);
-                        res.sendfile(param.dstPath, function () {
-                            fs.unlink(param.dstPath, function (err) {
+                        grid.get(md5, function (err, copyData) {
+                            if (!err) {
+                                updateLastAccessTime(md5);
+                                res.end(copyData)
+                            }
+                        });
+                        fs.unlink(param.dstPath, function (err) {
+                            if (err) {
+                                console.log('无法删除生成的缩略图')
+                            } else {
+                                console.log('已经删除生成的缩略图');
+                            }
+                            fs.unlink(fileName, function (err) {
                                 if (err) {
-                                    console.log('无法删除生成的缩略图')
+                                    console.log('无法删除原图')
                                 } else {
-                                    console.log('已经删除生成的缩略图');
+                                    console.log('已经删除原图');
                                 }
-                                fs.unlink(fileName, function (err) {
-                                    if (err) {
-                                        console.log('无法删除原图')
-                                    } else {
-                                        console.log('已经删除原图');
-                                    }
-                                })
-                            });
+                            })
                         });
                     });
                 }
