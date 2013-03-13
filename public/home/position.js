@@ -9,9 +9,7 @@
 define(function (require, exports, module) {
 
     var $pic = $('#pic');
-    var $img = $('#img')
-    var img = $img.find('img')[0];
-    var current = require('./read').current;
+    var $img = $('#img');
 
     exports.zoom = function (param) {
         switch (param) {
@@ -27,11 +25,16 @@ define(function (require, exports, module) {
         }
     }
 
-    /*适应屏幕大小*/
-    function actualPixels() {
+
+    /*
+     * 默认返回当前图片的高宽，
+     * 否则根据index,返回指定图片等比后的高宽
+     * */
+    function getGeometric() {
+        var current = require('./read').current;
         var image = {
-            width: current.width,
-            height: current.height
+            width: current.metadata.width,
+            height: current.metadata.height
         };
         //图片按比例缩放
         var currentW = $pic.width();
@@ -55,28 +58,63 @@ define(function (require, exports, module) {
                 h = image.height;
             }
         }
-        img.width = w;
-        img.height = h;
-        $img.css({
+
+        return {
+            w: w,
+            h: h,
             top: ($pic.height() / 2 - h / 2),
             left: ($pic.width() / 2 - w / 2)
-        })
+        }
+    }
+
+    /*
+     适应屏幕
+     * */
+    function actualPixels() {
+        var obj = require('./read').current;
+        var point = getGeometric();
+        $('#img').append('<img src="' + '/read/' + obj._id + '/w:' + parseInt(point.w, 10) + '/h:' + parseInt(point.h, 10) + '">');
+        var img = $img[0].getElementsByTagName('img')[0];
+        img.removeAttribute('width')
+        img.removeAttribute('height')
+        $img.css({
+            top: point.top,
+            left: point.left
+        });
     }
 
     /*实际大小*/
     function fitScreen() {
-        img.width = current.width;
-        img.height = current.height;
+        var img = $img[0].getElementsByTagName('img')[0];
+        var current = require('./read').current;
+        $('#img').append('<img src="' + '/read/' + current._id + '">');
+        //当显示原始大小时，则使用原图的质量
         $img.css({
-            top: -(current.height / 2 - $pic.height() / 2),
-            left: -(current.width - $pic.width()) / 2
+            top: -(current.metadata.height / 2 - $pic.height() / 2),
+            left: -(current.metadata.width - $pic.width()) / 2
         })
     }
 
     $(window).on('resize', function () {
-        if (exports.model === 'actual-pixels') {
-            actualPixels();
+        if ($img.data('zoom')) {
+            clearInterval($img.data('zoom'));
         }
-    })
+        var cl = setTimeout(function () {
+            if (exports.model === 'actual-pixels') {
+                actualPixels();
+            }
+        }, 200);
+        $img.data('zoom', cl);
+
+    });
+
+    (function () {
+        var model = $('#control').find('a.checked').attr('data-zoom')
+        if (model) exports.model = model;
+    })();
+
+    exports.getGeometric = getGeometric;
+    exports.actualPixels = actualPixels;
+    exports.fitScreen = fitScreen;
 
 })

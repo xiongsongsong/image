@@ -30,22 +30,8 @@ app.configure('development', function () {
     app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
-
-app.get('/users', user.list);
-
-//读取指定的文件
-app.get(/\/read\/(\w+)(?:\/)?(.*)?/, require('./routes/read').read);
-
-app.post('/save', require('./routes/save-psd').savePsd);
+require('./routes/index').init(app);
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log("Express server listening on port " + app.get('port'));
 });
-
-app.get('/home/nav2.js',function(req,res){
-    setTimeout(function(){
-        res.end('var a=1;')
-
-    },300000)
-})

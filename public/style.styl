@@ -38,6 +38,11 @@ a
     right: 1em
     top: 1em
 
+#nav .add
+    position:absolute
+    right:4em
+    top:1em
+
 /*侧边栏*/
 #control 
     width: 50px
@@ -91,15 +96,20 @@ a
     display: inline-block
     border-top: none
     position: relative
+    width:50px
+    height:50px
+    background-position:center 0;
+    background-repeat:no-repeat
 
-#file-container .file a img:after
+#file-container .file a.checked:after
     position:absolute
     left:0
     top:0
     width:100%
     height:100%
-    content:'.';
-    background:url(/home/bg.png) 0 0;
+    content:''
+    display:block
+    background:url(/images/bg.png) 0 0
 
 
 #container
@@ -117,22 +127,12 @@ a
     bottom:30px
     width:100%
 #img
-    position:absolute;
+    position:absolute
     left:3px
     top:0
-    box-shadow:0 0 52px #000,0 0 1px #000
-
-#img.anim
-    -webkit-transition: all .2s ease
-    -moz-transition: all .2s ease
-    -o-transition: all .2s ease
-    transition: all .2s ease
+    box-shadow:0 0 1px #000,0 0 8px rgba(0,0,0,.50)
 
 #img img
-    -webkit-transition: all .2s ease
-    -moz-transition: all .2s ease
-    -o-transition: all .2s ease
-    transition: all .2s ease
     display:block
 
 #container .pic img

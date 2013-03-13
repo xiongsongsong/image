@@ -9,11 +9,6 @@
 define(function (require, exports, module) {
     $('#control').on('click', 'a', function (ev) {
         var $this = $(ev.target);
-        var $img = $('#img');
-        $img.addClass('anim');
-        setTimeout(function () {
-            $img.removeClass('anim');
-        }, 200);
         require('./position').zoom($this.attr('data-zoom'));
 
         $this.addClass('checked')

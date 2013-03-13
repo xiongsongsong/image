@@ -2,11 +2,19 @@
  * GET home page.
  */
 
-var DB = require('db');
+exports.init = function (app) {
 
-exports.index = function (req, res) {
-    var collection = new DB.mongodb.Collection(DB.client, 'fs.files');
-    collection.find({_id: /^(?:[a-z0-9]{24})$/}).toArray(function (err, docs) {
-        res.render('index', { title: 'Express', docs: docs });
+    app.get('/', function (req, res) {
+        res.render('index', { title: 'Express'});
     });
-};
+
+    //读取指定的文件
+    app.get(/\/read\/(\w+)(?:\/)?(.*)?/, require('./read').read);
+
+    app.post('/save', require('./save-psd').savePsd);
+
+    //获取文件列表
+    require('./list').init(app);
+
+
+}

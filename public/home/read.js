@@ -3,18 +3,26 @@
  * User: 松松
  * Date: 13-3-7
  * Time: 上午10:08
- * To change this template use File | Settings | File Templates.
+ * 渲染图片
  */
+
 define(function (require, exports, module) {
 
-    var data = require('./data').data;
+    var position = require('./position');
 
-    var img = $('#img img')[0];
-    img.width = data[0].width;
-    img.height = data[0].height;
-    img.src = data[0].src;
+    exports.read = function (index) {
 
-    exports.current = data[0];
+        $('#img img').remove();
 
+        var data = require('./data').data.docs;
+        var obj = data[index];
 
+        exports.current = obj;
+
+        if (position.model === 'actual-pixels') {
+            position.actualPixels();
+        } else {
+            position.fitScreen()
+        }
+    }
 })

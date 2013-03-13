@@ -11,12 +11,16 @@ block content
                 span Landspace
                 span Ruby
         .sign Sign
+        .add
+            form(action="/save",method="post",enctype="multipart/form-data")
+                input(type="file",name="file")
+                input(type="submit",value="Save")
+
     #container
         #pic
             #img
-                img
     #control
-        a.zoom(href="#",data-zoom="actual-pixels") 适应
+        a.zoom(href="#",data-zoom="actual-pixels").checked 适应
             br
             | 屏幕
         a.zoom(href="#",data-zoom="fit-screen") 实际
@@ -25,11 +29,6 @@ block content
     #list
         #file-container
             .file
-                a.checked
-                    img(src="/images/a.jpg")
-                a
-                    img(src="/images/b.jpg")
-                a
-                    img(src="/images/c.jpg")
+
     #sidebar
     script(src="/sea-debug.js",data-config="/config",data-main="/home/init",id="seajsnode")

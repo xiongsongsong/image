@@ -28,7 +28,6 @@ define(function (require, exports, module) {
         ev.preventDefault()
     }
 
-
     function move() {
         console.log('绑定事件');
         $(document).on('mousemove', moveStart);

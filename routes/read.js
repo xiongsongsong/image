@@ -65,19 +65,19 @@ exports.read = function (req, res) {
 
     //将参数转换为MD5
 
+    var id = req.params[0];
+
     var md5;
     var isNormal = Object.keys(sortParam).length === 0;
 
     if (!isNormal) {
         md5 = crypto.createHash('md5');
-        md5.update(JSON.stringify(sortParam));
+        md5.update(JSON.stringify(sortParam) + id);
         md5 = md5.digest('hex');
     }
 
-    //查库
 
     var grid = new DB.mongodb.Grid(DB.client, 'fs');
-    var id = req.params[0];
 
 
     grid.get(id, function (err, data) {

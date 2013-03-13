@@ -45,8 +45,6 @@ var allowFile = {
 //递归保存每个文件日志、文件实体和对应缩略图
 function _savePsd(files, req, res) {
 
-    var errorMsg = [];
-    var pass = [];
     var tempFile = [];
 
     function save() {
