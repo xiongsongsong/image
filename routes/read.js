@@ -172,14 +172,14 @@ exports.read = function (req, res) {
                             } else {
                                 console.log('已经删除生成的缩略图');
                             }
-                            fs.unlink(fileName, function (err) {
-                                if (err) {
-                                    console.log('无法删除原图')
-                                } else {
-                                    console.log('已经删除原图');
-                                }
-                            })
                         });
+                        fs.unlink(fileName, function (err) {
+                            if (err) {
+                                console.log('无法删除原图')
+                            } else {
+                                console.log('已经删除原图');
+                            }
+                        })
                     });
                 }
             });
