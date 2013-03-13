@@ -12,8 +12,6 @@ define(function (require, exports, module) {
 
     exports.read = function (index) {
 
-        $('#img img').remove();
-
         var data = require('./data').data.docs;
         var obj = data[index];
 

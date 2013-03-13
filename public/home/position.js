@@ -71,6 +71,7 @@ define(function (require, exports, module) {
      适应屏幕
      * */
     function actualPixels() {
+        $('#img img').remove();
         var obj = require('./read').current;
         var point = getGeometric();
         $('#img').append('<img src="' + '/read/' + obj._id + '/w:' + parseInt(point.w, 10) + '/h:' + parseInt(point.h, 10) + '">');
@@ -85,6 +86,7 @@ define(function (require, exports, module) {
 
     /*实际大小*/
     function fitScreen() {
+        $('#img img').remove();
         var img = $img[0].getElementsByTagName('img')[0];
         var current = require('./read').current;
         $('#img').append('<img src="' + '/read/' + current._id + '">');
