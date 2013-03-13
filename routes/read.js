@@ -76,20 +76,19 @@ exports.read = function (req, res) {
         md5 = md5.digest('hex');
     }
 
-
     var grid = new DB.mongodb.Grid(DB.client, 'fs');
-
 
     grid.get(id, function (err, data) {
         if (!err) {
             //如果是普通请求（未加参数）
             if (isNormal) {
+                updateLastAccessTime(id);
                 res.end(data);
             } else {
-
                 //首先尝试从数据库中读取图片
                 grid.get(md5, function (err, copyData) {
                     if (!err) {
+                        updateLastAccessTime(md5);
                         res.end(copyData)
                     }
                     //如果未找到，则开始生成图片
@@ -160,6 +159,7 @@ exports.read = function (req, res) {
 
                     var gs = new GridStore(DB.dbServer, md5, md5, "w", options);
                     gs.writeFile(param.dstPath, function (err) {
+                        updateLastAccessTime(md5);
                         res.sendfile(param.dstPath, function () {
                             fs.unlink(param.dstPath, function (err) {
                                 if (err) {
@@ -181,4 +181,23 @@ exports.read = function (req, res) {
             });
         })
     }
+}
+
+//更新文件的最后访问时间
+function updateLastAccessTime(id) {
+    var collection = new DB.mongodb.Collection(DB.client, 'fs.files');
+    collection.findAndModify({filename: id},
+        [
+            ['filename', 1]
+        ],
+        {
+            $set: {
+                "metadata.lastAccessTime": Date.now()
+            }
+        }, {
+            new: true
+        }
+        , function (err, docs) {
+            console.log(docs.metadata.lastAccessTime);
+        })
 }
