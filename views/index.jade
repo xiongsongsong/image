@@ -12,10 +12,10 @@ block content
                 span Ruby
         .sign Sign
         .add
-            form(action="/save",method="post",enctype="multipart/form-data")
-                input(type="file",name="file")
-                input(type="submit",value="Save")
-
+            form(action="/save",method="post",name="upload",enctype="multipart/form-data")
+                label(for="file-field") 选择文件
+                input#file-field(type="file",name="file",multiple="true")
+                a#upload-triggers(href="#upload") 提交
     #container
         #pic
             #img

@@ -15,8 +15,9 @@ exports.init = function (app) {
 
 function list(req, res) {
     var collection = new DB.mongodb.Collection(DB.client, 'fs.files');
-    collection.find({_id: /^(?:[a-z0-9]{24})$/}, {_id: 1, length: 1, metadata: 1}).toArray(function (err, docs) {
+    collection.find({_id: /^(?:[a-z0-9]{24})$/}, {_id: 1, length: 1, metadata: 1}).sort({_id: -1}).toArray(function (err, docs) {
         res.header('content-type', 'application/json;charset=utf-8');
         res.end(JSON.stringify({docs: docs}, undefined, '    '))
     });
 }
+

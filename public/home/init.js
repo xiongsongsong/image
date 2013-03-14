@@ -9,4 +9,7 @@ define(function (require, exports, module) {
     /*控制*/
     require('./control');
 
+    /*上传*/
+    require('./upload');
+
 });
