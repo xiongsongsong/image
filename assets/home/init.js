@@ -1,3 +1,4 @@
+
 define(function (require, exports, module) {
 
     /*加载图片导航*/

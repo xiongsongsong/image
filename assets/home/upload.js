@@ -20,7 +20,8 @@ define(function (require, exports, module) {
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
-                document.title = xhr.responseText;
+                //document.title = xhr.responseText;
+                console.log(xhr.responseText)
             }
         };
 

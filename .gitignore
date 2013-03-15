@@ -1,4 +1,4 @@
 .idea/
 *.iml
-public/*.css
+assets/*.css
 test*
